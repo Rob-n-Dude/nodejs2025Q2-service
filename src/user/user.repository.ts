@@ -22,14 +22,14 @@ export class UserRepository implements Repository<User> {
     });
   }
 
-  async update(id: string, user: Partial<User>): Promise<User | null> {
+  async update(id: string, userData: Partial<User>): Promise<User | null> {
     const userToUpdate = await this.findById(id);
 
     if (!userToUpdate) {
       return null;
     }
 
-    const updatedUser = { ...user, ...userToUpdate };
+    const updatedUser = { ...userToUpdate, ...userData };
     this.users[id] = updatedUser;
     return updatedUser;
   }
