@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
@@ -11,7 +12,7 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/CreateUserDTO';
 import { UpdatePasswordDTO } from './dto/UpdatePasswordDTO';
-import { IdDTO } from 'src/common/dto/IdDTO';
+import { IdDTO } from '../common/dto/IdDTO';
 
 @Controller('user')
 export class UsersController {
@@ -41,7 +42,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUser(@Param() { id }: IdDTO) {
     return await this.userService.deleteUser(id);
   }

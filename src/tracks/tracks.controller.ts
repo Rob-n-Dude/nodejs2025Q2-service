@@ -4,12 +4,13 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpStatus,
   Param,
   Post,
   Put,
 } from '@nestjs/common';
 import { TracksService } from './tracks.service';
-import { IdDTO } from 'src/common/dto/IdDTO';
+import { IdDTO } from '../common/dto/IdDTO';
 import { CreateTrackDTO } from './dto/CreateTrackDTO';
 
 @Controller('track')
@@ -37,7 +38,7 @@ export class TracksController {
   }
 
   @Delete(':id')
-  @HttpCode(204)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTrack(@Param() { id }: IdDTO) {
     return await this.tracksService.deleteTrack(id);
   }

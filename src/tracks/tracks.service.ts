@@ -4,6 +4,9 @@ import { TrackNotFoundException } from './exceptions/TrackNotFoundException';
 import { Track } from './tracks.types';
 import { CreateTrackDTO } from './dto/CreateTrackDTO';
 import { randomUUID } from 'node:crypto';
+import { OnEvent } from '@nestjs/event-emitter';
+import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
+import { EventType } from '../common/events/types';
 
 @Injectable()
 export class TracksService {
@@ -60,5 +63,25 @@ export class TracksService {
     if (!track) {
       throw new TrackNotFoundException(id);
     }
+  }
+
+  @OnEvent(EventType.ALBUM_DELETED)
+  async handleDeleteAlbumEvent(event: DeleteAlbumEvent) {
+    const { id } = event;
+
+    const tracks = await this.tracksRepository.findAll();
+
+    const tracksToUpdate = tracks.filter((track) => track.albumId === id);
+
+    Promise.all(
+      tracksToUpdate.map((track) => {
+        const updatedTrack = {
+          ...track,
+          albumId: null,
+        };
+
+        return this.tracksRepository.update(track.id, updatedTrack);
+      }),
+    );
   }
 }

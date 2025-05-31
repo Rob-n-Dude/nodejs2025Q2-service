@@ -1,4 +1,4 @@
-import { Repository } from 'src/common/repository';
+import { Repository } from '../common/repository';
 import { Track } from './tracks.types';
 
 export class TracksRepository implements Repository<Track> {
