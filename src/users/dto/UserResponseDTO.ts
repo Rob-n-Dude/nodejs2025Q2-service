@@ -1,4 +1,4 @@
-import { User } from '../user.types';
+import { User } from '../users.types';
 import { Exclude } from 'class-transformer';
 
 export class UserResponseDTO implements User {

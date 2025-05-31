@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { CreateUser } from '../user.types';
+import { CreateUser } from '../users.types';
 
 export class CreateUserDTO implements CreateUser {
   @IsString({ message: 'Name must be a string' })

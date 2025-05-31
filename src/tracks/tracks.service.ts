@@ -1,0 +1,64 @@
+import { Injectable } from '@nestjs/common';
+import { TracksRepository } from './tracks.repository';
+import { TrackNotFoundException } from './exceptions/TrackNotFoundException';
+import { Track } from './tracks.types';
+import { CreateTrackDTO } from './dto/CreateTrackDTO';
+import { randomUUID } from 'node:crypto';
+
+@Injectable()
+export class TracksService {
+  constructor(private readonly tracksRepository: TracksRepository) {}
+
+  async getAllTracks() {
+    return await this.tracksRepository.findAll();
+  }
+
+  async getTrackById(id: string) {
+    const track = await this.tracksRepository.findById(id);
+
+    if (!track) {
+      throw new TrackNotFoundException(id);
+    }
+
+    return track;
+  }
+
+  async createTrack(trackData: CreateTrackDTO) {
+    const { name, artistId = null, albumId = null, duration } = trackData;
+
+    const id = randomUUID();
+
+    const track: Track = {
+      id,
+      name,
+      artistId,
+      albumId,
+      duration,
+    };
+
+    return await this.tracksRepository.create(track);
+  }
+
+  async updateTrack(id: string, trackData: Partial<CreateTrackDTO>) {
+    const track = await this.tracksRepository.findById(id);
+
+    if (!track) {
+      throw new TrackNotFoundException(id);
+    }
+
+    const updatedTrack = {
+      ...track,
+      ...trackData,
+    };
+
+    return await this.tracksRepository.update(id, updatedTrack);
+  }
+
+  async deleteTrack(id: string) {
+    const track = await this.tracksRepository.delete(id);
+
+    if (!track) {
+      throw new TrackNotFoundException(id);
+    }
+  }
+}

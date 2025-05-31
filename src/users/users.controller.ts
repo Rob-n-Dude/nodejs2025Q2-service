@@ -8,14 +8,14 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserIdDTO } from './dto/UserIdDTO';
+import { UsersService } from './users.service';
 import { CreateUserDTO } from './dto/CreateUserDTO';
 import { UpdatePasswordDTO } from './dto/UpdatePasswordDTO';
+import { IdDTO } from 'src/common/dto/IdDTO';
 
 @Controller('user')
-export class UserController {
-  constructor(private readonly userService: UserService) {}
+export class UsersController {
+  constructor(private readonly userService: UsersService) {}
 
   @Get()
   async getAll() {
@@ -23,7 +23,7 @@ export class UserController {
   }
 
   @Get(':id')
-  async getById(@Param() { id }: UserIdDTO) {
+  async getById(@Param() { id }: IdDTO) {
     return await this.userService.getUserById(id);
   }
 
@@ -34,7 +34,7 @@ export class UserController {
 
   @Put(':id')
   async updateUserPassword(
-    @Param() { id }: UserIdDTO,
+    @Param() { id }: IdDTO,
     @Body() userData: UpdatePasswordDTO,
   ) {
     return await this.userService.updateUserPassword(id, userData);
@@ -42,7 +42,7 @@ export class UserController {
 
   @Delete(':id')
   @HttpCode(204)
-  async deleteUser(@Param() { id }: UserIdDTO) {
+  async deleteUser(@Param() { id }: IdDTO) {
     return await this.userService.deleteUser(id);
   }
 }

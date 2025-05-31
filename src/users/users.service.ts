@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { UserRepository } from './user.repository';
+import { UsersRepository } from './users.repository';
 import { CreateUserDTO } from './dto/CreateUserDTO';
 import { randomUUID } from 'node:crypto';
-import { User } from './user.types';
+import { User } from './users.types';
 import { plainToInstance } from 'class-transformer';
 import { UserResponseDTO } from './dto/UserResponseDTO';
 import { UpdatePasswordDTO } from './dto/UpdatePasswordDTO';
@@ -10,8 +10,8 @@ import { UserNotFoundException } from './exceptions/UserNotFoundException';
 import { IncorrectOldPasswordException } from './exceptions/IncorrectOldPasswordException';
 
 @Injectable()
-export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+export class UsersService {
+  constructor(private readonly userRepository: UsersRepository) {}
 
   async getAllUsers() {
     const users = await this.userRepository.findAll();
@@ -22,7 +22,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      return new UserNotFoundException(id);
+      throw new UserNotFoundException(id);
     }
 
     return plainToInstance(UserResponseDTO, user);

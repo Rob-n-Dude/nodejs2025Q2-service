@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { User } from './user.types';
+import { User } from './users.types';
 import { Repository } from 'src/common/repository';
 
 @Injectable()
-export class UserRepository implements Repository<User> {
+export class UsersRepository implements Repository<User> {
   private users: Record<string, User> = {};
 
   async findById(id: string): Promise<User | null> {
-    return this.users[id] || null;
+    return Promise.resolve(this.users[id] || null);
   }
 
   async findAll(): Promise<User[]> {
-    return Object.values(this.users);
+    return Promise.resolve(Object.values(this.users));
   }
 
   async create(user: User): Promise<User> {
