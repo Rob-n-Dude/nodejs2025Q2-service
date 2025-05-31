@@ -72,4 +72,12 @@ export class UserService {
 
     return plainToInstance(UserResponseDTO, updatedUser);
   }
+
+  async deleteUser(id: string) {
+    const isDeleted = await this.userRepository.delete(id);
+
+    if (!isDeleted) {
+      throw new UserNotFoundException(id);
+    }
+  }
 }
