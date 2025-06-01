@@ -1,3 +1,4 @@
 export enum EventType {
   ALBUM_DELETED = 'ALBUM_DELETED',
+  ARTIST_DELETED = 'ARTIST_DELETED',
 }

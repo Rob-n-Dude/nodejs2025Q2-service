@@ -49,12 +49,7 @@ export class TracksService {
       throw new TrackNotFoundException(id);
     }
 
-    const updatedTrack = {
-      ...track,
-      ...trackData,
-    };
-
-    return await this.tracksRepository.update(id, updatedTrack);
+    return await this.tracksRepository.update(id, trackData);
   }
 
   async deleteTrack(id: string) {
@@ -73,7 +68,7 @@ export class TracksService {
 
     const tracksToUpdate = tracks.filter((track) => track.albumId === id);
 
-    Promise.all(
+    await Promise.all(
       tracksToUpdate.map((track) => {
         const updatedTrack = {
           ...track,

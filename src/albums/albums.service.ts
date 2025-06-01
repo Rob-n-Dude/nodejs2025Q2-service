@@ -3,9 +3,10 @@ import { AlbumsRepository } from './albums.repository';
 import { AlbumNotFoundException } from './exceptions/AlbumNotFoundException';
 import { CreateAlbumDTO } from './dto/CreateAlbumDTO';
 import { randomUUID } from 'node:crypto';
-import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
 import { EventType } from '../common/events/types';
+import { DeleteArtistEvent } from 'src/artists/events/DeleteArtistEvent';
 
 @Injectable()
 export class AlbumsService {
@@ -49,12 +50,7 @@ export class AlbumsService {
       throw new AlbumNotFoundException(id);
     }
 
-    const updatedAlbum = {
-      ...album,
-      ...albumData,
-    };
-
-    return await this.albumsRepository.update(id, updatedAlbum);
+    return await this.albumsRepository.update(id, albumData);
   }
 
   async deleteAlbum(id: string) {
@@ -65,5 +61,19 @@ export class AlbumsService {
     }
 
     this.eventEmitter.emit(EventType.ALBUM_DELETED, new DeleteAlbumEvent(id));
+  }
+
+  @OnEvent(EventType.ARTIST_DELETED)
+  async handleDeleteArtistEvent(event: DeleteArtistEvent) {
+    const { id } = event;
+    const albums = await this.albumsRepository.findAll();
+
+    const albumsToUpdate = albums.filter((album) => album.artistId === id);
+
+    await Promise.all(
+      albumsToUpdate.map((album) => {
+        return this.albumsRepository.update(album.id, { artistId: null });
+      }),
+    );
   }
 }
