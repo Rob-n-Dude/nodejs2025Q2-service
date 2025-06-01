@@ -6,7 +6,6 @@ import { Artist } from './artists.types';
 import { UpdateArtistDTO } from './dto/UpdateArtistDTO';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { EventType } from 'src/common/events/types';
-import { DeleteArtistEvent } from './events/DeleteArtistEvent';
 import { ArtistsRepository } from './artists.repository';
 import { AddArtistToFavoritesEvent } from 'src/favorites/events/AddArtistToFavoritesEvent';
 import { GetEntityEvent } from 'src/common/events/GetEntityEvent';

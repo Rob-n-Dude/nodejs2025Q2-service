@@ -4,9 +4,7 @@ import { AlbumNotFoundException } from './exceptions/AlbumNotFoundException';
 import { CreateAlbumDTO } from './dto/CreateAlbumDTO';
 import { randomUUID } from 'node:crypto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
 import { EventType } from '../common/events/types';
-import { DeleteArtistEvent } from 'src/artists/events/DeleteArtistEvent';
 import { AddAlbumToFavoritesEvent } from 'src/favorites/events/AddAlbumToFavoritesEvent';
 import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
 import { EntityKey } from 'src/common/EntityKey';
@@ -64,11 +62,14 @@ export class AlbumsService {
       throw new AlbumNotFoundException(id);
     }
 
-    this.eventEmitter.emit(EventType.ALBUM_DELETED, new DeleteAlbumEvent(id));
+    this.eventEmitter.emit(
+      EventType.ENTITY_DELETED,
+      new EntityDeletedEvent(EntityKey.ALBUMS, id),
+    );
   }
 
   @OnEvent(EventType.ENTITY_DELETED)
-  async handleDeleteArtistEvent(event: EntityDeletedEvent) {
+  async handleDeleteEntityEvent(event: EntityDeletedEvent) {
     const { id, key } = event;
     if (key !== EntityKey.ARTISTS) {
       return;

@@ -4,10 +4,8 @@ import { TrackNotFoundException } from './exceptions/TrackNotFoundException';
 import { Track } from './tracks.types';
 import { CreateTrackDTO } from './dto/CreateTrackDTO';
 import { randomUUID } from 'node:crypto';
-import { OnEvent } from '@nestjs/event-emitter';
-import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
+import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { EventType } from '../common/events/types';
-import { DeleteArtistEvent } from '../artists/events/DeleteArtistEvent';
 import { AddTrackToFavoritesEvent } from 'src/favorites/events/AddTrackToFavoritesEvent';
 import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
 import { EntityKey } from 'src/common/EntityKey';
@@ -15,7 +13,10 @@ import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
 
 @Injectable()
 export class TracksService {
-  constructor(private readonly tracksRepository: TracksRepository) {}
+  constructor(
+    private readonly tracksRepository: TracksRepository,
+    private readonly eventEmitter: EventEmitter2,
+  ) {}
 
   async getAllTracks() {
     return await this.tracksRepository.findAll();
@@ -63,45 +64,35 @@ export class TracksService {
     if (!track) {
       throw new TrackNotFoundException(id);
     }
-  }
 
-  @OnEvent(EventType.ALBUM_DELETED)
-  async handleDeleteAlbumEvent(event: DeleteAlbumEvent) {
-    const { id } = event;
-
-    const tracks = await this.tracksRepository.findAll();
-
-    const tracksToUpdate = tracks.filter((track) => track.albumId === id);
-
-    await Promise.all(
-      tracksToUpdate.map((track) => {
-        const updatedTrack = {
-          ...track,
-          albumId: null,
-        };
-
-        return this.tracksRepository.update(track.id, updatedTrack);
-      }),
+    this.eventEmitter.emit(
+      EventType.ENTITY_DELETED,
+      new EntityDeletedEvent(EntityKey.TRACKS, id),
     );
   }
 
   @OnEvent(EventType.ENTITY_DELETED)
-  async handleDeleteArtistEvent(event: EntityDeletedEvent) {
+  async handleDeleteEntityEvent(event: EntityDeletedEvent) {
     const { id, key } = event;
 
-    if (key !== EntityKey.ARTISTS) {
+    if (key === EntityKey.TRACKS) {
       return;
     }
 
     const tracks = await this.tracksRepository.findAll();
 
-    const tracksToUpdate = tracks.filter((track) => track.artistId === id);
+    const entityKeyToTrackKey =
+      key === EntityKey.ARTISTS ? 'artistId' : 'albumId';
+
+    const tracksToUpdate = tracks.filter(
+      (track) => track[entityKeyToTrackKey] === id,
+    );
 
     await Promise.all(
       tracksToUpdate.map((track) => {
         const updatedTrack = {
           ...track,
-          artistId: null,
+          [entityKeyToTrackKey]: null,
         };
 
         return this.tracksRepository.update(track.id, updatedTrack);
