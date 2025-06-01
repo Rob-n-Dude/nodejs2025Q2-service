@@ -7,7 +7,11 @@ import { randomUUID } from 'node:crypto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
 import { EventType } from '../common/events/types';
-import { DeleteArtistEvent } from 'src/artists/events/DeleteArtistEvent';
+import { DeleteArtistEvent } from '../artists/events/DeleteArtistEvent';
+import { AddTrackToFavoritesEvent } from 'src/favorites/events/AddTrackToFavoritesEvent';
+import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
+import { EntityKey } from 'src/common/EntityKey';
+import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
 
 @Injectable()
 export class TracksService {
@@ -81,9 +85,14 @@ export class TracksService {
     );
   }
 
-  @OnEvent(EventType.ARTIST_DELETED)
-  async handleDeleteArtistEvent(event: DeleteArtistEvent) {
-    const { id } = event;
+  @OnEvent(EventType.ENTITY_DELETED)
+  async handleDeleteArtistEvent(event: EntityDeletedEvent) {
+    const { id, key } = event;
+
+    if (key !== EntityKey.ARTISTS) {
+      return;
+    }
+
     const tracks = await this.tracksRepository.findAll();
 
     const tracksToUpdate = tracks.filter((track) => track.artistId === id);
@@ -98,5 +107,33 @@ export class TracksService {
         return this.tracksRepository.update(track.id, updatedTrack);
       }),
     );
+  }
+
+  @OnEvent(EventType.ADD_TRACK_TO_FAVORITES)
+  async handleCheckTrackExisted(event: AddTrackToFavoritesEvent) {
+    const { trackId, callback } = event;
+
+    const track = await this.tracksRepository.findById(trackId);
+
+    await callback(!!track);
+  }
+
+  @OnEvent(EventType.GET_ENTITY)
+  async handleGetEntitiesByIds(event: GetEntityEvent) {
+    const { key } = event;
+
+    if (key !== EntityKey.TRACKS) {
+      return;
+    }
+
+    const { ids, callback } = event;
+
+    const tracksById = await Promise.all(
+      ids.map((id) => {
+        return this.tracksRepository.findById(id);
+      }),
+    );
+
+    callback(tracksById);
   }
 }

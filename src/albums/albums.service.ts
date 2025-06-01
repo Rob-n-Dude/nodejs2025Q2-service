@@ -7,6 +7,10 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
 import { EventType } from '../common/events/types';
 import { DeleteArtistEvent } from 'src/artists/events/DeleteArtistEvent';
+import { AddAlbumToFavoritesEvent } from 'src/favorites/events/AddAlbumToFavoritesEvent';
+import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
+import { EntityKey } from 'src/common/EntityKey';
+import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
 
 @Injectable()
 export class AlbumsService {
@@ -63,9 +67,13 @@ export class AlbumsService {
     this.eventEmitter.emit(EventType.ALBUM_DELETED, new DeleteAlbumEvent(id));
   }
 
-  @OnEvent(EventType.ARTIST_DELETED)
-  async handleDeleteArtistEvent(event: DeleteArtistEvent) {
-    const { id } = event;
+  @OnEvent(EventType.ENTITY_DELETED)
+  async handleDeleteArtistEvent(event: EntityDeletedEvent) {
+    const { id, key } = event;
+    if (key !== EntityKey.ARTISTS) {
+      return;
+    }
+
     const albums = await this.albumsRepository.findAll();
 
     const albumsToUpdate = albums.filter((album) => album.artistId === id);
@@ -75,5 +83,33 @@ export class AlbumsService {
         return this.albumsRepository.update(album.id, { artistId: null });
       }),
     );
+  }
+
+  @OnEvent(EventType.ADD_ALBUM_TO_FAVORITES)
+  async handleCheckAlbumExisted(event: AddAlbumToFavoritesEvent) {
+    const { id, callback } = event;
+
+    const track = await this.albumsRepository.findById(id);
+
+    await callback(!!track);
+  }
+
+  @OnEvent(EventType.GET_ENTITY)
+  async handleGetEntitiesByIds(event: GetEntityEvent) {
+    const { key } = event;
+
+    if (key !== EntityKey.ALBUMS) {
+      return;
+    }
+
+    const { ids, callback } = event;
+
+    const albumsById = await Promise.all(
+      ids.map((id) => {
+        return this.albumsRepository.findById(id);
+      }),
+    );
+
+    callback(albumsById);
   }
 }
