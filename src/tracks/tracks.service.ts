@@ -7,6 +7,7 @@ import { randomUUID } from 'node:crypto';
 import { OnEvent } from '@nestjs/event-emitter';
 import { DeleteAlbumEvent } from '../common/events/DeleteAlbumEvent';
 import { EventType } from '../common/events/types';
+import { DeleteArtistEvent } from 'src/artists/events/DeleteArtistEvent';
 
 @Injectable()
 export class TracksService {
@@ -73,6 +74,25 @@ export class TracksService {
         const updatedTrack = {
           ...track,
           albumId: null,
+        };
+
+        return this.tracksRepository.update(track.id, updatedTrack);
+      }),
+    );
+  }
+
+  @OnEvent(EventType.ARTIST_DELETED)
+  async handleDeleteArtistEvent(event: DeleteArtistEvent) {
+    const { id } = event;
+    const tracks = await this.tracksRepository.findAll();
+
+    const tracksToUpdate = tracks.filter((track) => track.artistId === id);
+
+    await Promise.all(
+      tracksToUpdate.map((track) => {
+        const updatedTrack = {
+          ...track,
+          artistId: null,
         };
 
         return this.tracksRepository.update(track.id, updatedTrack);
