@@ -5,10 +5,15 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
+## Environment Configuration
+
+Before running the application, you need to create a `.env` file in the root directory of the project.  
+Copy the contents of the `.env.example` file into the newly created `.env` file and provide the necessary values.
+
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Rob-n-Dude/nodejs2025Q2-service.git
 ```
 
 ## Installing NPM modules
