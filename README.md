@@ -5,10 +5,15 @@
 - Git - [Download & Install Git](https://git-scm.com/downloads).
 - Node.js - [Download & Install Node.js](https://nodejs.org/en/download/) and the npm package manager.
 
+## Environment Configuration
+
+Before running the application, you need to create a `.env` file in the root directory of the project.  
+Copy the contents of the `.env.example` file into the newly created `.env` file and provide the necessary values.
+
 ## Downloading
 
 ```
-git clone {repository URL}
+git clone https://github.com/Rob-n-Dude/nodejs2025Q2-service.git
 ```
 
 ## Installing NPM modules
@@ -23,9 +28,7 @@ npm install
 npm start
 ```
 
-After starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-For more information about OpenAPI/Swagger please visit https://swagger.io/.
+App starting on port (4000 as default) you can modify it in .env file.
 
 ## Testing
 
