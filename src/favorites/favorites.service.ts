@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FavoritesRepository } from './favorites.repository';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { EventType } from 'src/common/events/types';
+import { EventType } from '../common/events/types';
 import { AddTrackToFavoritesEvent } from './events/AddTrackToFavoritesEvent';
 import { NonExistedTrackException } from './exceptions/NonExistedTrackException';
 import { FavoriteTrackNotFoundException } from './exceptions/FavoriteTrackNotFoundException';
@@ -11,9 +11,9 @@ import { FavoriteArtistNotFoundException } from './exceptions/FavoriteArtistNotF
 import { NonExistedAlbumException } from './exceptions/NonExistedAlbumException';
 import { AddAlbumToFavoritesEvent } from './events/AddAlbumToFavoritesEvent';
 import { FavoriteAlbumNotFoundException } from './exceptions/FavoriteAlbumNotFoundException';
-import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
-import { EntityKey } from 'src/common/EntityKey';
-import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
+import { GetEntityEvent } from '../common/events/GetEntityEvent';
+import { EntityKey } from '../common/EntityKey';
+import { EntityDeletedEvent } from '../common/events/EntityDeletedEvent';
 
 @Injectable()
 export class FavoritesService {

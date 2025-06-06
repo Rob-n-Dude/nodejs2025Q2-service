@@ -5,10 +5,10 @@ import { CreateAlbumDTO } from './dto/CreateAlbumDTO';
 import { randomUUID } from 'node:crypto';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { EventType } from '../common/events/types';
-import { AddAlbumToFavoritesEvent } from 'src/favorites/events/AddAlbumToFavoritesEvent';
-import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
-import { EntityKey } from 'src/common/EntityKey';
-import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
+import { AddAlbumToFavoritesEvent } from '../favorites/events/AddAlbumToFavoritesEvent';
+import { GetEntityEvent } from '../common/events/GetEntityEvent';
+import { EntityKey } from '../common/EntityKey';
+import { EntityDeletedEvent } from '../common/events/EntityDeletedEvent';
 
 @Injectable()
 export class AlbumsService {

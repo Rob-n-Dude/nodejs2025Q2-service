@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { IdDTO } from 'src/common/dto/IdDTO';
+import { IdDTO } from '../common/dto/IdDTO';
 import { CreateArtistDTO } from './dto/CreateArtistDTO';
 import { UpdateArtistDTO } from './dto/UpdateArtistDTO';
 import { ArtistsService } from './artists.service';

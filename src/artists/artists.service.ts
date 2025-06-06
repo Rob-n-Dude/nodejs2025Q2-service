@@ -5,12 +5,12 @@ import { randomUUID } from 'node:crypto';
 import { Artist } from './artists.types';
 import { UpdateArtistDTO } from './dto/UpdateArtistDTO';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { EventType } from 'src/common/events/types';
+import { EventType } from '../common/events/types';
 import { ArtistsRepository } from './artists.repository';
-import { AddArtistToFavoritesEvent } from 'src/favorites/events/AddArtistToFavoritesEvent';
-import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
-import { EntityKey } from 'src/common/EntityKey';
-import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
+import { AddArtistToFavoritesEvent } from '../favorites/events/AddArtistToFavoritesEvent';
+import { GetEntityEvent } from '../common/events/GetEntityEvent';
+import { EntityKey } from '../common/EntityKey';
+import { EntityDeletedEvent } from '../common/events/EntityDeletedEvent';
 
 @Injectable()
 export class ArtistsService {

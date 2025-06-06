@@ -8,7 +8,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { FavoritesService } from './favorites.service';
-import { IdDTO } from 'src/common/dto/IdDTO';
+import { IdDTO } from '../common/dto/IdDTO';
 
 @Controller('favs')
 export class FavoritesController {
