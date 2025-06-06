@@ -5,9 +5,11 @@ import { AlbumsModule } from './albums/albums.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ArtistsModule } from './artists/artists.module';
 import { FavoritesModule } from './favorites/favorites.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
+    DatabaseModule,
     EventEmitterModule.forRoot(),
     UsersModule,
     TracksModule,
