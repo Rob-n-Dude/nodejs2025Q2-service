@@ -19,6 +19,7 @@ export class TracksController {
 
   @Get()
   async getAll() {
+    console.log('Fetching all tracks');
     return await this.tracksService.getAllTracks();
   }
 

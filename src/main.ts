@@ -18,6 +18,8 @@ async function bootstrap() {
       forbidUnknownValues: true,
     }),
   );
+
+  console.log(`Application is listening on port ${PORT}`);
   await app.listen(PORT);
 }
 bootstrap();

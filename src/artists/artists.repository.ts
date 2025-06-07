@@ -1,30 +1,41 @@
 import { Injectable } from '@nestjs/common';
-import { Artist } from './artists.types';
-import { Repository } from '../common/repository';
+import { Artist as ArtistInterface } from './artists.types';
+import { Repository as RepositoryInterface } from '../common/repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Artist } from './artists.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
-export class ArtistsRepository implements Repository<Artist> {
-  private artists: Record<string, Artist> = {};
+export class ArtistsRepository implements RepositoryInterface<ArtistInterface> {
+  private artists: Record<string, ArtistInterface> = {};
 
-  async findById(id: string): Promise<Artist | null> {
-    return Promise.resolve(this.artists[id] || null);
+  constructor(
+    @InjectRepository(Artist)
+    private readonly artistRepository: Repository<Artist>,
+  ) {}
+
+  async findById(id: string): Promise<ArtistInterface | null> {
+    // return Promise.resolve(this.artists[id] || null);
+    return this.artistRepository.findOne({ where: { id } }) || null;
   }
 
-  async findAll(): Promise<Artist[]> {
-    return Promise.resolve(Object.values(this.artists));
+  async findAll(): Promise<ArtistInterface[]> {
+    // return Promise.resolve(Object.values(this.artists));
+    return this.artistRepository.find();
   }
 
-  async create(artist: Artist): Promise<Artist> {
-    return new Promise((resolve) => {
-      this.artists[artist.id] = artist;
-      resolve(artist);
-    });
+  async create(artist: ArtistInterface): Promise<ArtistInterface> {
+    // return new Promise((resolve) => {
+    //   this.artists[artist.id] = artist;
+    //   resolve(artist);
+    // });
+    return this.artistRepository.save(artist);
   }
 
   async update(
     id: string,
-    artistData: Partial<Artist>,
-  ): Promise<Artist | null> {
+    artistData: Partial<ArtistInterface>,
+  ): Promise<ArtistInterface | null> {
     const artistToUpdate = await this.findById(id);
 
     if (!artistToUpdate) {
@@ -32,9 +43,11 @@ export class ArtistsRepository implements Repository<Artist> {
     }
 
     const updatedArtist = { ...artistToUpdate, ...artistData };
-    this.artists[id] = updatedArtist;
 
-    return updatedArtist;
+    return this.artistRepository.save(updatedArtist);
+    // this.artists[id] = updatedArtist;
+
+    // return updatedArtist;
   }
 
   async delete(id: string): Promise<boolean> {
@@ -44,7 +57,10 @@ export class ArtistsRepository implements Repository<Artist> {
       return false;
     }
 
-    delete this.artists[id];
-    return true;
+    const result = await this.artistRepository.delete(id);
+
+    return result.affected > 0;
+    // delete this.artists[id];
+    // return true;
   }
 }

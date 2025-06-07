@@ -9,5 +9,5 @@ export class Artist {
   name: string;
 
   @Column({ type: 'boolean' })
-  grammy: string;
+  grammy: boolean;
 }
