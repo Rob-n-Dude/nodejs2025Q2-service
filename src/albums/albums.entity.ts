@@ -11,6 +11,6 @@ export class Album {
   @Column()
   year: number;
 
-  @Column({ type: 'boolean' })
+  @Column({ nullable: true })
   artistId: string;
 }

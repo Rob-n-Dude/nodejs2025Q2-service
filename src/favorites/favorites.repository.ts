@@ -19,7 +19,8 @@ export class FavoritesRepository {
     };
 
     const favoriteEntity = this.favoriteRepository.create(emptyFavorites);
-    return this.favoriteRepository.save(favoriteEntity);
+    await this.favoriteRepository.save(favoriteEntity);
+    return emptyFavorites;
   }
 
   private async getFavorites(): Promise<FavoritesRepositoryInterface> {
@@ -32,9 +33,9 @@ export class FavoritesRepository {
     }
 
     return {
-      [EntityKey.ARTISTS]: favorite.artists,
-      [EntityKey.ALBUMS]: favorite.albums,
-      [EntityKey.TRACKS]: favorite.tracks,
+      [EntityKey.ARTISTS]: favorite[EntityKey.ARTISTS],
+      [EntityKey.ALBUMS]: favorite[EntityKey.ALBUMS],
+      [EntityKey.TRACKS]: favorite[EntityKey.TRACKS],
     };
   }
 

@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ENV } from '../utils/env';
+import * as pg from 'pg';
+
+pg.types.setTypeParser(pg.types.builtins.INT8, (value) => parseInt(value, 10));
 
 @Module({
   imports: [
