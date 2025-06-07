@@ -1,23 +1,25 @@
 import { Repository } from '../common/repository';
 import { Track } from './tracks.types';
+import { Repository as OrmRepo } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Track as TrackEntity } from './tracks.entity';
 
 export class TracksRepository implements Repository<Track> {
-  private tracks: Record<string, Track> = {};
+  constructor(
+    @InjectRepository(TrackEntity)
+    private readonly trackRepository: OrmRepo<TrackEntity>,
+  ) {}
 
-  async findById(id: string): Promise<Track | null> {
-    return Promise.resolve(this.tracks[id] || null);
+  async findById(id: string): Promise<Track | void> {
+    return this.trackRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<Track[]> {
-    return Promise.resolve(Object.values(this.tracks));
+    return this.trackRepository.find();
   }
 
   async create(track: Track): Promise<Track> {
-    return new Promise((resolve) => {
-      this.tracks[track.id] = track;
-
-      resolve(track);
-    });
+    return this.trackRepository.save(track);
   }
 
   async update(id: string, trackData: Partial<Track>): Promise<Track | null> {
@@ -32,9 +34,7 @@ export class TracksRepository implements Repository<Track> {
       ...trackData,
     };
 
-    this.tracks[id] = updatedTrack;
-
-    return updatedTrack;
+    return this.trackRepository.save(updatedTrack);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -44,8 +44,8 @@ export class TracksRepository implements Repository<Track> {
       return false;
     }
 
-    delete this.tracks[id];
+    const result = await this.trackRepository.delete(id);
 
-    return true;
+    return result.affected > 0;
   }
 }

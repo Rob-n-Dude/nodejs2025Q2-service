@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { Repository } from '../common/repository';
 import { Album } from './albums.types';
+import { Repository as OrmRepo } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Album as AlbumEntity } from './albums.entity';
 
 @Injectable()
 export class AlbumsRepository implements Repository<Album> {
-  private albums: Record<string, Album> = {};
+  constructor(
+    @InjectRepository(AlbumEntity)
+    private readonly albumRepository: OrmRepo<AlbumEntity>,
+  ) {}
 
-  async findById(id: string): Promise<Album | null> {
-    return Promise.resolve(this.albums[id] || null);
+  async findById(id: string): Promise<Album | void> {
+    return this.albumRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<Album[]> {
-    return Promise.resolve(Object.values(this.albums));
+    return this.albumRepository.find();
   }
 
   async create(album: Album): Promise<Album> {
-    return new Promise((resolve) => {
-      this.albums[album.id] = album;
-
-      resolve(album);
-    });
+    return this.albumRepository.save(album);
   }
 
   async update(id: string, albumData: Partial<Album>): Promise<Album | null> {
@@ -30,8 +32,7 @@ export class AlbumsRepository implements Repository<Album> {
     }
 
     const updateAlbum = { ...albumToUpdate, ...albumData };
-    this.albums[id] = updateAlbum;
-    return updateAlbum;
+    return this.albumRepository.save(updateAlbum);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -41,7 +42,8 @@ export class AlbumsRepository implements Repository<Album> {
       return false;
     }
 
-    delete this.albums[id];
-    return true;
+    const result = await this.albumRepository.delete(id);
+
+    return result.affected > 0;
   }
 }

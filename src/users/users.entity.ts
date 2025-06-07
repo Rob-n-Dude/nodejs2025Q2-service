@@ -15,7 +15,7 @@ export class User {
   version: number;
 
   @Column()
-  createAt: number;
+  createdAt: number;
 
   @Column()
   updatedAt: number;
