@@ -75,3 +75,8 @@ npm run format
 Press <kbd>F5</kbd> to debug.
 
 For more information, visit: https://code.visualstudio.com/docs/editor/debugging
+
+### Troubleshoot
+  - issue: unable to install dependencies
+  - solution: try to use `yarn` instead of npm, or 'install' command with flags `--force` for `--legacy-peer-deps`
+  
