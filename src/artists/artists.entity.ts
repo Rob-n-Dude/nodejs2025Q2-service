@@ -1,4 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Track } from '../tracks/tracks.entity';
+import { Album } from '../albums/albums.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('artists')
 export class Artist {
@@ -10,4 +12,14 @@ export class Artist {
 
   @Column({ type: 'boolean' })
   grammy: boolean;
+
+  @OneToMany(() => Album, (album) => album.artist, {
+    cascade: true,
+  })
+  albums: Album[];
+
+  @OneToMany(() => Track, (track) => track.artist, {
+    cascade: true,
+  })
+  tracks: Track[];
 }

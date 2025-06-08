@@ -11,11 +11,16 @@ export class TracksRepository implements Repository<Track> {
   ) {}
 
   async findById(id: string): Promise<Track | void> {
-    return this.trackRepository.findOne({ where: { id } });
+    return this.trackRepository.findOne({
+      where: { id },
+      relations: { album: true, artist: true },
+    });
   }
 
   async findAll(): Promise<Track[]> {
-    return this.trackRepository.find();
+    return this.trackRepository.find({
+      relations: { album: true, artist: true },
+    });
   }
 
   async create(track: Track): Promise<Track> {

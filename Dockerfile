@@ -10,4 +10,4 @@ RUN npm install -g nodemon
 
 COPY . .
 
-CMD ["nodemon", "--watch", "src", "src/main.ts"]s
+CMD ["nodemon", "--watch", "src", "src/main.ts"]

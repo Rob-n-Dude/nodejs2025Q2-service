@@ -13,11 +13,14 @@ export class AlbumsRepository implements Repository<Album> {
   ) {}
 
   async findById(id: string): Promise<Album | void> {
-    return this.albumRepository.findOne({ where: { id } });
+    return this.albumRepository.findOne({
+      where: { id },
+      relations: { artist: true },
+    });
   }
 
   async findAll(): Promise<Album[]> {
-    return this.albumRepository.find();
+    return this.albumRepository.find({ relations: { artist: true } });
   }
 
   async create(album: Album): Promise<Album> {
