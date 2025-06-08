@@ -23,7 +23,12 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "scan": "npm audit"
+    "scan": "npm audit",
+    "typeorm:cli": "ts-node ./node_modules/typeorm/cli.js",
+    "migration:create": "npm run typeorm:cli -- migration:create",
+    "migration:run": "npm run typeorm:cli -- migration:run --dataSource src/database/data-source.ts",
+    "migration:generate": "npm run typeorm:cli -- migration:generate --dataSource src/database/data-source.ts",
+    "migration:revert": "npm run typeorm:cli -- migration:revert --dataSource src/database/data-source.ts"
   },
   "dependencies": {
     "@nestjs/common": "^10.4.16",
