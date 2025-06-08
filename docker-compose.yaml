@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
     ports:
-      - "5432:5432"
+      - "${PG_PORT}:${PG_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - postgres_logs:/var/log/postgresql
@@ -20,6 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nestjs_app
+    image: home-lib:latest
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
