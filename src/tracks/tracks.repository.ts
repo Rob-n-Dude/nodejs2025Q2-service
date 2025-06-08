@@ -10,7 +10,7 @@ export class TracksRepository implements Repository<Track> {
     private readonly trackRepository: OrmRepo<TrackEntity>,
   ) {}
 
-  async findById(id: string): Promise<Track | void> {
+  async findById(id: string): Promise<TrackEntity | void> {
     return this.trackRepository.findOne({
       where: { id },
       relations: { album: true, artist: true },
@@ -49,8 +49,7 @@ export class TracksRepository implements Repository<Track> {
       return false;
     }
 
-    const result = await this.trackRepository.delete(id);
-
-    return result.affected > 0;
+    await this.trackRepository.remove(trackToDelete);
+    return true;
   }
 }

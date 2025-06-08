@@ -12,7 +12,7 @@ export class ArtistsRepository implements RepositoryInterface<ArtistInterface> {
     private readonly artistRepository: Repository<Artist>,
   ) {}
 
-  async findById(id: string): Promise<ArtistInterface | void> {
+  async findById(id: string): Promise<Artist | void> {
     return this.artistRepository.findOne({ where: { id } });
   }
 
@@ -46,8 +46,8 @@ export class ArtistsRepository implements RepositoryInterface<ArtistInterface> {
       return false;
     }
 
-    const result = await this.artistRepository.delete(id);
+    await this.artistRepository.remove(artistToDelete);
 
-    return result.affected > 0;
+    return true;
   }
 }

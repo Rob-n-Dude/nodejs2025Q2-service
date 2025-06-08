@@ -8,15 +8,15 @@ export class Favorite {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @ManyToMany(() => Album, { cascade: true })
+  @ManyToMany(() => Album, { cascade: true, onDelete: 'CASCADE' })
   @JoinTable()
   albums: Album[];
 
-  @ManyToMany(() => Artist, { cascade: true })
+  @ManyToMany(() => Artist, { cascade: true, onDelete: 'CASCADE' })
   @JoinTable()
   artists: Artist[];
 
-  @ManyToMany(() => Track, { cascade: true })
+  @ManyToMany(() => Track, { cascade: true, onDelete: 'CASCADE' })
   @JoinTable()
   tracks: Track[];
 }

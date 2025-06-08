@@ -12,7 +12,7 @@ export class AlbumsRepository implements Repository<Album> {
     private readonly albumRepository: OrmRepo<AlbumEntity>,
   ) {}
 
-  async findById(id: string): Promise<Album | void> {
+  async findById(id: string): Promise<AlbumEntity | void> {
     return this.albumRepository.findOne({
       where: { id },
       relations: { artist: true },
@@ -45,8 +45,8 @@ export class AlbumsRepository implements Repository<Album> {
       return false;
     }
 
-    const result = await this.albumRepository.delete(id);
+    await this.albumRepository.remove(albumToDelete);
 
-    return result.affected > 0;
+    return true;
   }
 }
