@@ -20,7 +20,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: nestjs_app
-    image: home-lib:latest
+    image: r0bindude/nestjs_app:latest
     restart: always
     environment:
       DB_HOST: ${DB_HOST}
