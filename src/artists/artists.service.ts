@@ -4,20 +4,11 @@ import { CreateArtistDTO } from './dto/CreateArtistDTO';
 import { randomUUID } from 'node:crypto';
 import { Artist } from './artists.types';
 import { UpdateArtistDTO } from './dto/UpdateArtistDTO';
-import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
-import { EventType } from 'src/common/events/types';
 import { ArtistsRepository } from './artists.repository';
-import { AddArtistToFavoritesEvent } from 'src/favorites/events/AddArtistToFavoritesEvent';
-import { GetEntityEvent } from 'src/common/events/GetEntityEvent';
-import { EntityKey } from 'src/common/EntityKey';
-import { EntityDeletedEvent } from 'src/common/events/EntityDeletedEvent';
 
 @Injectable()
 export class ArtistsService {
-  constructor(
-    private readonly artistsRepository: ArtistsRepository,
-    private readonly eventEmitter: EventEmitter2,
-  ) {}
+  constructor(private readonly artistsRepository: ArtistsRepository) {}
 
   async getAllArtists() {
     return await this.artistsRepository.findAll();
@@ -60,38 +51,5 @@ export class ArtistsService {
     if (!artist) {
       throw new ArtistNotFoundException(id);
     }
-
-    this.eventEmitter.emit(
-      EventType.ENTITY_DELETED,
-      new EntityDeletedEvent(EntityKey.ARTISTS, id),
-    );
-  }
-
-  @OnEvent(EventType.ADD_ARTIST_TO_FAVORITES)
-  async handleCheckArtistExisted(event: AddArtistToFavoritesEvent) {
-    const { id, callback } = event;
-
-    const artist = await this.artistsRepository.findById(id);
-
-    await callback(!!artist);
-  }
-
-  @OnEvent(EventType.GET_ENTITY)
-  async handleGetEntitiesByIds(event: GetEntityEvent) {
-    const { key } = event;
-
-    if (key !== EntityKey.ARTISTS) {
-      return;
-    }
-
-    const { ids, callback } = event;
-
-    const artistsById = await Promise.all(
-      ids.map((id) => {
-        return this.artistsRepository.findById(id);
-      }),
-    );
-
-    callback(artistsById);
   }
 }

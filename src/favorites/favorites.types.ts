@@ -1,4 +1,4 @@
-import { EntityKey } from 'src/common/EntityKey';
+import { EntityKey } from '../common/EntityKey';
 
 export interface Favorite {
   [EntityKey.ALBUMS]: string[];

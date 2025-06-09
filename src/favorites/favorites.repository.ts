@@ -1,41 +1,79 @@
-import { EntityKey } from 'src/common/EntityKey';
-
-type FavoritesRepositoryInterface = Record<EntityKey, string[]>;
+import { EntityKey } from '../common/EntityKey';
+import { InjectRepository } from '@nestjs/typeorm';
+import { IsNull, Not, Repository } from 'typeorm';
+import { Favorite } from './favorites.entity';
 
 export class FavoritesRepository {
-  private favorites: FavoritesRepositoryInterface = {
-    [EntityKey.ARTISTS]: [],
-    [EntityKey.ALBUMS]: [],
-    [EntityKey.TRACKS]: [],
-  };
+  constructor(
+    @InjectRepository(Favorite)
+    private readonly favoriteRepository: Repository<Favorite>,
+  ) {}
 
-  async findAll(): Promise<Record<string, string[]>> {
-    return Promise.resolve(this.favorites);
+  private async createEmptyFavorites(): Promise<Favorite> {
+    const favoriteEntity = this.favoriteRepository.create();
+    favoriteEntity.artists = [];
+    favoriteEntity.albums = [];
+    favoriteEntity.tracks = [];
+    return await this.favoriteRepository.save(favoriteEntity);
   }
 
-  async findByKey(key: EntityKey): Promise<string[]> {
-    return new Promise((resolve) => {
-      resolve(this.favorites[key]);
+  private async getFavoritesEntity(): Promise<Favorite> {
+    const favorites = await this.favoriteRepository.find({
+      where: { id: Not(IsNull()) },
+      relations: {
+        artists: true,
+        albums: true,
+        tracks: true,
+      },
     });
+
+    const favorite = favorites[0];
+
+    if (!favorite) {
+      return this.createEmptyFavorites();
+    }
+
+    return favorite;
   }
 
-  async create(key: EntityKey, id: string): Promise<string[]> {
-    return new Promise((resolve) => {
-      this.favorites[key].push(id);
-      resolve(this.favorites[key]);
-    });
+  async findAll(): Promise<Record<string, any[]>> {
+    const favorite = await this.getFavoritesEntity();
+
+    return {
+      [EntityKey.ARTISTS]: favorite.artists,
+      [EntityKey.ALBUMS]: favorite.albums,
+      [EntityKey.TRACKS]: favorite.tracks,
+    };
   }
 
-  async delete(key: EntityKey, id: string): Promise<boolean> {
-    const itemToDelete = this.favorites[key].indexOf(id);
+  async findByKey(key: EntityKey): Promise<any[]> {
+    const favorite = await this.getFavoritesEntity();
+    return favorite[key];
+  }
 
-    if (itemToDelete === -1) {
+  async create(key: EntityKey, entity: any): Promise<any[]> {
+    const favorite = await this.getFavoritesEntity();
+
+    if (!favorite[key].find((item) => item.id === entity.id)) {
+      favorite[key].push(entity);
+      await this.favoriteRepository.save(favorite);
+    }
+
+    return favorite[key];
+  }
+
+  async delete(key: EntityKey, entityId: string): Promise<boolean> {
+    const favorite = await this.getFavoritesEntity();
+
+    const index = favorite[key].findIndex((entity) => entity.id === entityId);
+
+    if (index === -1) {
       return false;
     }
 
-    return new Promise((resolve) => {
-      this.favorites[key].splice(itemToDelete, 1);
-      resolve(true);
-    });
+    favorite[key].splice(index, 1);
+    await this.favoriteRepository.save(favorite);
+
+    return true;
   }
 }

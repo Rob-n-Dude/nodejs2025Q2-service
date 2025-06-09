@@ -1,25 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './users.types';
 import { Repository } from '../common/repository';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User as UserEntity } from './users.entity';
+import { Repository as OrmRepo } from 'typeorm';
 
 @Injectable()
 export class UsersRepository implements Repository<User> {
-  private users: Record<string, User> = {};
+  constructor(
+    @InjectRepository(UserEntity)
+    private readonly userRepository: OrmRepo<UserEntity>,
+  ) {}
 
-  async findById(id: string): Promise<User | null> {
-    return Promise.resolve(this.users[id] || null);
+  async findById(id: string): Promise<User | void> {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   async findAll(): Promise<User[]> {
-    return Promise.resolve(Object.values(this.users));
+    return this.userRepository.find();
   }
 
   async create(user: User): Promise<User> {
-    return new Promise((resolve) => {
-      this.users[user.id] = user;
-
-      resolve(user);
-    });
+    return this.userRepository.save(user);
   }
 
   async update(id: string, userData: Partial<User>): Promise<User | null> {
@@ -30,8 +32,8 @@ export class UsersRepository implements Repository<User> {
     }
 
     const updatedUser = { ...userToUpdate, ...userData };
-    this.users[id] = updatedUser;
-    return updatedUser;
+
+    return this.userRepository.save(updatedUser);
   }
 
   async delete(id: string): Promise<boolean> {
@@ -41,7 +43,8 @@ export class UsersRepository implements Repository<User> {
       return false;
     }
 
-    delete this.users[id];
-    return true;
+    const result = await this.userRepository.delete(id);
+
+    return result.affected > 0;
   }
 }
